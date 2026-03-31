@@ -1,0 +1,81 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build serving image
+        run: |
+          docker build -f infra/Dockerfile.serving -t ghcr.io/${{ github.repository }}/fraud-serving:${{ github.sha }} .
+          docker tag ghcr.io/${{ github.repository }}/fraud-serving:${{ github.sha }} ghcr.io/${{ github.repository }}/fraud-serving:latest
+
+      - name: Build training image
+        run: |
+          docker build -f infra/Dockerfile.training -t ghcr.io/${{ github.repository }}/fraud-training:${{ github.sha }} .
+          docker tag ghcr.io/${{ github.repository }}/fraud-training:${{ github.sha }} ghcr.io/${{ github.repository }}/fraud-training:latest
+
+      - name: Push serving image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/fraud-serving:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/fraud-serving:latest
+
+      - name: Push training image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/fraud-training:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/fraud-training:latest
+
+  smoke_test:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: Run serving image locally
+        run: |
+          docker run -d --name fraud-serving-test -p 8000:8000 ghcr.io/${{ github.repository }}/fraud-serving:${{ github.sha }}
+          sleep 10
+
+      - name: Smoke test /health
+        run: |
+          curl --fail http://localhost:8000/health
+
+      - name: Smoke test /predict
+        run: |
+          curl --fail -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
+            -d '{"transaction_id": 1, "Amount": 100.0, "Time": 12345.0}'
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: smoke_test
+    if: ${{ secrets.DEPLOY_HOST != '' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /path/to/your/app
+            docker compose pull
+            docker compose up -d

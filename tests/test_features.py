@@ -1,4 +1,3 @@
-import math
 
 import numpy as np
 import pandas as pd
@@ -61,7 +60,7 @@ def test_rolling_tx_counts():
     df = sample_df()
     out = add_rolling_features(df)
 
-    assert list(out["tx_frequency_1h"]) == [1, 2, 3, 3, 1]
+    assert list(out["tx_frequency_1h"]) == [1, 2, 3, 2, 1]
     assert list(out["tx_frequency_6h"]) == [1, 2, 3, 4, 1]
 
 

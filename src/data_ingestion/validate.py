@@ -1,22 +1,23 @@
 from __future__ import annotations
 
+import argparse
 import json
 import math
-import sys
 from pathlib import Path
 
 from src.data_ingestion.gx_setup import validate_csv
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("Usage: python -m src.data_ingestion.validate <path_to_csv>")
-        return 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path_to_csv")
+    parser.add_argument("--ci", action="store_true", help="Use CI-friendly validation thresholds")
+    args = parser.parse_args()
 
-    csv_path = Path(sys.argv[1])
+    csv_path = Path(args.path_to_csv)
 
     try:
-        success, results, fraud_rate = validate_csv(csv_path)
+        success, results, fraud_rate = validate_csv(csv_path, ci_mode=args.ci)
     except Exception as exc:
         msg = str(exc)
         if "ExpectationSuite with name transaction_data_quality was not found" in msg:

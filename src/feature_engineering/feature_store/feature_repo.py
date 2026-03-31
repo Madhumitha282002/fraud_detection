@@ -1,5 +1,5 @@
 from feast import FeatureView, Field, FileSource
-from feast.types import Float32, Float64, Int64
+from feast.types import Float64, Int64
 from feast.data_format import ParquetFormat
 
 from entities import transaction

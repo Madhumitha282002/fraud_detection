@@ -6,7 +6,7 @@ import time
 import pandas as pd
 import structlog
 from confluent_kafka import Consumer, Producer
-
+import logging
 from src.data_ingestion.message_validation import validate_transaction_message
 from src.feature_engineering.features import build_features
 
@@ -17,8 +17,6 @@ DLQ_TOPIC = "transactions-dlq"
 BROKERS = "localhost:9092"
 GROUP_ID = "fraud-feature-consumer"
 
-import logging
-import structlog
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 structlog.configure(

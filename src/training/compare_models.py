@@ -6,7 +6,6 @@ import lightgbm as lgb
 import mlflow
 import mlflow.lightgbm
 import mlflow.sklearn
-import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 

@@ -76,3 +76,10 @@ services:
       - "8080:8080"
     working_dir: /opt/project
     command: bash -c "airflow webserver --port 8080 & airflow scheduler"
+  
+  fraud-serving:
+    image: ghcr.io/madhumitha282002/fraud_detection/fraud-serving:latest
+    container_name: fraud-serving
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

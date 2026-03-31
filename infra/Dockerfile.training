@@ -1,0 +1,22 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN python -m pip install --upgrade pip
+
+RUN pip install \
+    pandas \
+    numpy \
+    scikit-learn \
+    xgboost \
+    lightgbm \
+    mlflow \
+    feast \
+    pyarrow \
+    matplotlib \
+    optuna
+
+COPY src /app/src
+COPY configs /app/configs
+
+CMD ["python", "-c", "print('training image ready')"]

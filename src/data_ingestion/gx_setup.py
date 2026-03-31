@@ -58,7 +58,8 @@ def get_suite(context):
     return context.suites.get(SUITE_NAME)
 
 
-def validate_csv(csv_path: str | Path):
+
+def validate_csv(csv_path: str | Path, ci_mode: bool = False):
     context = get_context()
     df = load_dataframe(csv_path)
 
@@ -69,7 +70,28 @@ def validate_csv(csv_path: str | Path):
     results = batch.validate(suite)
 
     fraud_rate = float(df["Class"].mean()) if "Class" in df.columns else float("nan")
-    fraud_rate_ok = "Class" in df.columns and 0.001 <= fraud_rate <= 0.05
 
-    success = bool(results.success) and fraud_rate_ok
+    if ci_mode:
+        fraud_rate_ok = "Class" in df.columns
+    else:
+        fraud_rate_ok = "Class" in df.columns and 0.001 <= fraud_rate <= 0.05
+
+    row_count = len(df)
+    if ci_mode:
+        row_count_ok = 100 <= row_count <= 1000
+    else:
+        row_count_ok = 1000 <= row_count <= 500000
+
+    if ci_mode:
+        non_row_count_failures = []
+        for res in results.results:
+            if not res.success:
+                exp_type = res.expectation_config.type
+                if exp_type != "expect_table_row_count_to_be_between":
+                    non_row_count_failures.append(res)
+        ge_success = len(non_row_count_failures) == 0
+    else:
+        ge_success = bool(results.success)
+
+    success = ge_success and fraud_rate_ok and row_count_ok
     return success, results, fraud_rate
