@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import mlflow
 import mlflow.xgboost
 import numpy as np
 import xgboost as xgb
@@ -15,12 +14,13 @@ from sklearn.metrics import (
     classification_report,
 )
 
+import mlflow
 from src.training.utils import (
     FEATURE_NAMES,
     compute_metrics,
     compute_scale_pos_weight,
-    get_X_y,
     get_project_root,
+    get_X_y,
     load_training_dataframe,
     stratified_split,
 )

@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 
-import mlflow
 import numpy as np
 from sklearn.metrics import classification_report
 
+import mlflow
 from src.training.utils import (
     compute_metrics,
     get_X_y,

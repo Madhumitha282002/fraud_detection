@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 import time
 
-import mlflow
 import pandas as pd
 import pytest
 import requests
 from confluent_kafka import Consumer, Producer
 from feast import FeatureStore
+
+import mlflow
 
 KAFKA_BROKERS = "localhost:9092"
 RAW_TOPIC = "transactions"

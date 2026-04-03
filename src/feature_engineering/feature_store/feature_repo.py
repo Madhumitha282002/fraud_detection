@@ -1,8 +1,7 @@
-from feast import FeatureView, Field, FileSource
-from feast.types import Float64, Int64
-from feast.data_format import ParquetFormat
-
 from entities import transaction
+from feast import FeatureView, Field, FileSource
+from feast.data_format import ParquetFormat
+from feast.types import Float64, Int64
 
 transaction_source = FileSource(
     name="transaction_source",

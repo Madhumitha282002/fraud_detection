@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import os
 
-import mlflow
 import numpy as np
 import pytest
 
+import mlflow
 from src.training.utils import (
     compute_metrics,
     get_X_y,

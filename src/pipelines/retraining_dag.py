@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 import os
 import subprocess
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator

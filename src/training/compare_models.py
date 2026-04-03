@@ -3,12 +3,12 @@ from __future__ import annotations
 import json
 
 import lightgbm as lgb
-import mlflow
 import mlflow.lightgbm
 import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
+import mlflow
 from src.training.utils import (
     compute_metrics,
     get_X_y,

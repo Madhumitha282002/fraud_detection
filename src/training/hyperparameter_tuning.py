@@ -3,13 +3,13 @@ from __future__ import annotations
 import argparse
 import json
 
-import mlflow
 import mlflow.xgboost
 import optuna
 import xgboost as xgb
 from optuna.pruners import MedianPruner
 from sklearn.metrics import average_precision_score
 
+import mlflow
 from src.training.utils import (
     FEATURE_NAMES,
     get_X_y,

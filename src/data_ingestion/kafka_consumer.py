@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 
 import pandas as pd
 import structlog
 from confluent_kafka import Consumer, Producer
-import logging
+
 from src.data_ingestion.message_validation import validate_transaction_message
 from src.feature_engineering.features import build_features
 
