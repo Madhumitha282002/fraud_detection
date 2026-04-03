@@ -6,8 +6,12 @@ import mlflow
 import numpy as np
 import pytest
 
-from src.training.utils import compute_metrics, get_X_y, load_training_dataframe, stratified_split
-
+from src.training.utils import (
+    compute_metrics,
+    get_X_y,
+    load_training_dataframe,
+    stratified_split,
+)
 
 MODEL_URI_ENV = "MLFLOW_MODEL_URI"
 

@@ -7,7 +7,6 @@ import subprocess
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-
 PROJECT_ROOT = "/opt/project"
 PYTHON_BIN = "python3"
 
@@ -22,7 +21,9 @@ REGISTER_SCRIPT = "src.training.register_model"
 
 
 def run_cmd(cmd: list[str]) -> None:
-    result = subprocess.run(cmd, cwd=PROJECT_ROOT, check=False, capture_output=True, text=True)
+    result = subprocess.run(
+        cmd, cwd=PROJECT_ROOT, check=False, capture_output=True, text=True
+    )
     print(result.stdout)
     print(result.stderr)
     if result.returncode != 0:
@@ -35,17 +36,24 @@ def validate_new_data() -> None:
 
 def engineer_features() -> None:
     run_cmd([PYTHON_BIN, "-m", FEATURE_SCRIPT])
-    run_cmd([PYTHON_BIN, "-c",
-             "from feast import FeatureStore; "
-             "store=FeatureStore(repo_path='src/feature_engineering/feature_store'); "
-             "print('Feast repo loaded successfully')"])
-    run_cmd([
-        "bash",
-        "-c",
-        "cd src/feature_engineering/feature_store && "
-        "feast apply && "
-        "feast materialize 2020-01-01T00:00:00 2030-01-01T00:00:00"
-    ])
+    run_cmd(
+        [
+            PYTHON_BIN,
+            "-c",
+            "from feast import FeatureStore; "
+            "store=FeatureStore(repo_path='src/feature_engineering/feature_store'); "
+            "print('Feast repo loaded successfully')",
+        ]
+    )
+    run_cmd(
+        [
+            "bash",
+            "-c",
+            "cd src/feature_engineering/feature_store && "
+            "feast apply && "
+            "feast materialize 2020-01-01T00:00:00 2030-01-01T00:00:00",
+        ]
+    )
 
 
 def train_model() -> None:

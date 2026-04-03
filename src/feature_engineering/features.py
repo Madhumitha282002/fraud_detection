@@ -6,7 +6,6 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
-
 SECONDS_IN_HOUR = 3600
 SECONDS_IN_DAY = 86400
 
@@ -90,7 +89,9 @@ def _rolling_count(times: pd.Series, window_seconds: int) -> pd.Series:
     return pd.Series(result, index=times.index)
 
 
-def _rolling_mean(times: pd.Series, amounts: pd.Series, window_seconds: int) -> pd.Series:
+def _rolling_mean(
+    times: pd.Series, amounts: pd.Series, window_seconds: int
+) -> pd.Series:
     t = times.to_numpy()
     a = amounts.to_numpy(dtype=float)
     result = np.zeros(len(t), dtype=float)
@@ -119,8 +120,12 @@ def add_rolling_features(
     out["tx_frequency_6h"] = _rolling_count(out[time_col], 6 * SECONDS_IN_HOUR)
     out["tx_frequency_24h"] = _rolling_count(out[time_col], 24 * SECONDS_IN_HOUR)
 
-    out["amount_mean_1h"] = _rolling_mean(out[time_col], out[amount_col], 1 * SECONDS_IN_HOUR)
-    out["amount_mean_24h"] = _rolling_mean(out[time_col], out[amount_col], 24 * SECONDS_IN_HOUR)
+    out["amount_mean_1h"] = _rolling_mean(
+        out[time_col], out[amount_col], 1 * SECONDS_IN_HOUR
+    )
+    out["amount_mean_24h"] = _rolling_mean(
+        out[time_col], out[amount_col], 24 * SECONDS_IN_HOUR
+    )
     return out
 
 

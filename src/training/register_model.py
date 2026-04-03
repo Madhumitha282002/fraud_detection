@@ -6,7 +6,6 @@ import time
 import mlflow
 from mlflow import MlflowClient
 
-
 MODEL_NAME = "fraud-detection-model"
 TRACKING_URI = "http://localhost:5001"
 
@@ -58,8 +57,12 @@ def main() -> None:
     client.set_registered_model_tag(MODEL_NAME, "feature_version", args.feature_version)
 
     client.set_model_version_tag(MODEL_NAME, mv.version, "algorithm", args.algorithm)
-    client.set_model_version_tag(MODEL_NAME, mv.version, "dataset_version", args.dataset_version)
-    client.set_model_version_tag(MODEL_NAME, mv.version, "feature_version", args.feature_version)
+    client.set_model_version_tag(
+        MODEL_NAME, mv.version, "dataset_version", args.dataset_version
+    )
+    client.set_model_version_tag(
+        MODEL_NAME, mv.version, "feature_version", args.feature_version
+    )
 
     client.transition_model_version_stage(
         name=MODEL_NAME,

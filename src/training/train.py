@@ -9,7 +9,11 @@ import mlflow.xgboost
 import numpy as np
 import xgboost as xgb
 from mlflow.models import infer_signature
-from sklearn.metrics import PrecisionRecallDisplay, RocCurveDisplay, classification_report
+from sklearn.metrics import (
+    PrecisionRecallDisplay,
+    RocCurveDisplay,
+    classification_report,
+)
 
 from src.training.utils import (
     FEATURE_NAMES,
@@ -20,7 +24,6 @@ from src.training.utils import (
     load_training_dataframe,
     stratified_split,
 )
-
 
 EXPERIMENT_NAME = "fraud-detection"
 RANDOM_STATE = 42
@@ -69,7 +72,9 @@ def save_pr_curve(y_true, y_prob, out_path: Path) -> None:
     plt.close(fig)
 
 
-def save_feature_importance(model: xgb.XGBClassifier, feature_names: list[str], out_path: Path) -> None:
+def save_feature_importance(
+    model: xgb.XGBClassifier, feature_names: list[str], out_path: Path
+) -> None:
     booster = model.get_booster()
     scores = booster.get_score(importance_type="gain")
     ranked = [(name, float(scores.get(name, 0.0))) for name in feature_names]

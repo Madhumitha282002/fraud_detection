@@ -9,7 +9,6 @@ from pathlib import Path
 import pandas as pd
 from confluent_kafka import Producer
 
-
 DEFAULT_TOPIC = "transactions"
 DEFAULT_BROKERS = "localhost:9092"
 DEFAULT_RATE = 10.0

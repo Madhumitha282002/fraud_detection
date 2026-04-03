@@ -4,7 +4,6 @@ from feast.data_format import ParquetFormat
 
 from entities import transaction
 
-
 transaction_source = FileSource(
     name="transaction_source",
     path="../../../data/processed/transactions_features.parquet",

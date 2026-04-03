@@ -7,7 +7,12 @@ import mlflow
 import numpy as np
 from sklearn.metrics import classification_report
 
-from src.training.utils import compute_metrics, get_X_y, load_training_dataframe, stratified_split
+from src.training.utils import (
+    compute_metrics,
+    get_X_y,
+    load_training_dataframe,
+    stratified_split,
+)
 
 
 def load_model(model_uri: str):
@@ -39,7 +44,11 @@ def main() -> None:
     print("Test metrics:")
     print(json.dumps(metrics, indent=2))
     print("\nClassification report:")
-    print(classification_report(y_test, (y_prob >= 0.5).astype(int), digits=4, zero_division=0))
+    print(
+        classification_report(
+            y_test, (y_prob >= 0.5).astype(int), digits=4, zero_division=0
+        )
+    )
 
     with mlflow.start_run(run_name="model-evaluation"):
         mlflow.log_param("evaluated_model_uri", args.model_uri)

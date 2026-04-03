@@ -10,7 +10,6 @@ import logging
 from src.data_ingestion.message_validation import validate_transaction_message
 from src.feature_engineering.features import build_features
 
-
 RAW_TOPIC = "transactions"
 PROCESSED_TOPIC = "processed-transactions"
 DLQ_TOPIC = "transactions-dlq"
@@ -46,7 +45,9 @@ def make_producer() -> Producer:
     return Producer({"bootstrap.servers": BROKERS})
 
 
-def send_to_dlq(producer: Producer, original_value: bytes | None, error_message: str) -> None:
+def send_to_dlq(
+    producer: Producer, original_value: bytes | None, error_message: str
+) -> None:
     payload = {
         "error": error_message,
         "raw_message": original_value.decode("utf-8") if original_value else None,

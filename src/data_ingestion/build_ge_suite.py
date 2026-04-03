@@ -70,9 +70,7 @@ def add_expectations_to_suite(suite):
 
     # 1) Column existence
     suite.add_expectation(
-        gx.expectations.ExpectTableColumnsToMatchSet(
-            column_set=expected_columns
-        )
+        gx.expectations.ExpectTableColumnsToMatchSet(column_set=expected_columns)
     )
 
     # 2) Column types
@@ -100,9 +98,7 @@ def add_expectations_to_suite(suite):
 
     # 3) Null checks
     for col in expected_columns:
-        suite.add_expectation(
-            gx.expectations.ExpectColumnValuesToNotBeNull(column=col)
-        )
+        suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column=col))
 
     # 4) Value ranges
     suite.add_expectation(

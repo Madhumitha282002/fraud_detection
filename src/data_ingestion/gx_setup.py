@@ -58,7 +58,6 @@ def get_suite(context):
     return context.suites.get(SUITE_NAME)
 
 
-
 def validate_csv(csv_path: str | Path, ci_mode: bool = False):
     context = get_context()
     df = load_dataframe(csv_path)

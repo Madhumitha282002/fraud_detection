@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
-
-REQUIRED_COLUMNS = [f"V{i}" for i in range(1, 29)] + ["Time", "Amount", "Class", "transaction_id"]
+REQUIRED_COLUMNS = [f"V{i}" for i in range(1, 29)] + [
+    "Time",
+    "Amount",
+    "Class",
+    "transaction_id",
+]
 
 
 def validate_transaction_message(payload: dict[str, Any]) -> tuple[bool, str | None]:

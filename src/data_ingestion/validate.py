@@ -11,7 +11,9 @@ from src.data_ingestion.gx_setup import validate_csv
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("path_to_csv")
-    parser.add_argument("--ci", action="store_true", help="Use CI-friendly validation thresholds")
+    parser.add_argument(
+        "--ci", action="store_true", help="Use CI-friendly validation thresholds"
+    )
     args = parser.parse_args()
 
     csv_path = Path(args.path_to_csv)
@@ -21,7 +23,9 @@ def main() -> int:
     except Exception as exc:
         msg = str(exc)
         if "ExpectationSuite with name transaction_data_quality was not found" in msg:
-            print("Validation execution error: suite 'transaction_data_quality' does not exist yet.")
+            print(
+                "Validation execution error: suite 'transaction_data_quality' does not exist yet."
+            )
             print("Run: python3 -m src.data_ingestion.build_ge_suite")
             return 1
 

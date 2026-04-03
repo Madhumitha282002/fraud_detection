@@ -6,7 +6,6 @@ import pandas as pd
 
 from src.feature_engineering.features import build_features
 
-
 RAW_PATH = Path("data/raw/creditcard.csv")
 OUT_PATH = Path("data/processed/transactions_features.parquet")
 

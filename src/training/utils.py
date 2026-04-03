@@ -16,7 +16,6 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import StratifiedShuffleSplit
 
-
 FEATURE_REFS = [
     "transaction_features:amount_log",
     "transaction_features:amount_zscore",
@@ -44,14 +43,15 @@ def get_feast_store() -> FeatureStore:
     return FeatureStore(repo_path=str(repo_path))
 
 
-
 def load_training_dataframe() -> pd.DataFrame:
     root = get_project_root()
     parquet_path = root / "data" / "processed" / "transactions_features.parquet"
     df = pd.read_parquet(parquet_path)
 
     entity_df = df[["transaction_id", "event_timestamp"]].copy()
-    entity_df["event_timestamp"] = pd.to_datetime(entity_df["event_timestamp"], utc=True)
+    entity_df["event_timestamp"] = pd.to_datetime(
+        entity_df["event_timestamp"], utc=True
+    )
 
     store = get_feast_store()
     historical = store.get_historical_features(
@@ -67,7 +67,7 @@ def load_training_dataframe() -> pd.DataFrame:
 
     merged = merged.dropna(subset=["Class"]).reset_index(drop=True)
     merged["Class"] = merged["Class"].astype(int)
-    return merged 
+    return merged
 
 
 def stratified_split(

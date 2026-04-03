@@ -20,7 +20,9 @@ EXPERIMENT_NAME = "fraud-detection"
 TRACKING_URI = "http://localhost:5001"
 
 
-def log_model_run(model_name: str, model, X_train, y_train, X_val, y_val, params: dict) -> dict:
+def log_model_run(
+    model_name: str, model, X_train, y_train, X_val, y_val, params: dict
+) -> dict:
     with mlflow.start_run(run_name=f"compare_{model_name}"):
         mlflow.log_param("model_type", model_name)
         mlflow.log_params(params)
@@ -67,7 +69,9 @@ def main() -> None:
         "random_state": 42,
     }
     lgb_model = lgb.LGBMClassifier(**lightgbm_params)
-    log_model_run("lightgbm", lgb_model, X_train, y_train, X_val, y_val, lightgbm_params)
+    log_model_run(
+        "lightgbm", lgb_model, X_train, y_train, X_val, y_val, lightgbm_params
+    )
 
     rf_params = {
         "n_estimators": 300,
@@ -87,7 +91,9 @@ def main() -> None:
         "max_iter": 1000,
     }
     lr_model = LogisticRegression(**lr_params)
-    log_model_run("logistic_regression", lr_model, X_train, y_train, X_val, y_val, lr_params)
+    log_model_run(
+        "logistic_regression", lr_model, X_train, y_train, X_val, y_val, lr_params
+    )
 
     print("\nComparison runs logged to MLflow.")
     print(xgb_best_note)

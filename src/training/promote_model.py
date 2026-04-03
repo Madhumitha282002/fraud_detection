@@ -6,8 +6,12 @@ import mlflow
 import numpy as np
 from mlflow import MlflowClient
 
-from src.training.utils import compute_metrics, get_X_y, load_training_dataframe, stratified_split
-
+from src.training.utils import (
+    compute_metrics,
+    get_X_y,
+    load_training_dataframe,
+    stratified_split,
+)
 
 TRACKING_URI = "http://localhost:5001"
 MODEL_NAME = "fraud-detection-model"
@@ -96,7 +100,9 @@ def main() -> None:
             print(json.dumps(production_metrics, indent=2))
 
         print("\nDecision:")
-        print("Promoted Staging -> Production" if promote else "Kept current Production")
+        print(
+            "Promoted Staging -> Production" if promote else "Kept current Production"
+        )
 
 
 if __name__ == "__main__":
