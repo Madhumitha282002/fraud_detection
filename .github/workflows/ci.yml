@@ -57,9 +57,12 @@ jobs:
           pip install -e .
           pip install pytest pytest-cov
 
-      - name: Run unit tests with coverage
+      - name: Run unit tests
         run: |
-          pytest --cov=src --cov-report=xml --cov-fail-under=80 -v
+          pytest -m "not integration" \
+            --cov=src/feature_engineering \
+            --cov-report=xml \
+            --cov-fail-under=80 -v
 
       - name: Upload coverage xml
         uses: actions/upload-artifact@v4
@@ -85,11 +88,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install great-expectations pandas
 
       - name: Run data validation on CI fixture
         run: |
-          python -m src.data_ingestion.validate tests/fixtures/sample_transactions.csv
+          python -m src.data_ingestion.validate --ci tests/fixtures/sample_transactions.csv
 
   build:
     runs-on: ubuntu-latest

@@ -68,6 +68,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
     volumes:
       - ./airflow_home:/opt/airflow
       - ./src/pipelines:/opt/airflow/dags
@@ -77,8 +78,17 @@ services:
     working_dir: /opt/project
     command: bash -c "airflow webserver --port 8080 & airflow scheduler"
   
+  # fraud-serving:
+  #   image: ghcr.io/madhumitha282002/fraud_detection/fraud-serving:latest
+  #   container_name: fraud-serving
+  #   ports:
+  #     - "8000:8000"
+  #   restart: unless-stopped
+  
   fraud-serving:
-    image: ghcr.io/madhumitha282002/fraud_detection/fraud-serving:latest
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile.serving
     container_name: fraud-serving
     ports:
       - "8000:8000"
