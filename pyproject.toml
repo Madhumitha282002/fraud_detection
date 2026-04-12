@@ -42,7 +42,7 @@ line_length = 88
 [tool.ruff]
 line-length = 88
 target-version = "py310"
-exclude = ["notebooks/"]
+exclude = [".venv", "notebooks"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
