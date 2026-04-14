@@ -1,0 +1,27 @@
+[2026-04-13T23:24:57.235+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-04-13T23:24:57.244+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: fraud_detection_retraining.engineer_features integration-1776122689 [queued]>
+[2026-04-13T23:24:57.246+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: fraud_detection_retraining.engineer_features integration-1776122689 [queued]>
+[2026-04-13T23:24:57.246+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-04-13T23:24:57.251+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): engineer_features> on 2026-04-13 23:24:49.740461+00:00
+[2026-04-13T23:24:57.252+0000] {standard_task_runner.py:64} INFO - Started process 135 to run task
+[2026-04-13T23:24:57.253+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'fraud_detection_retraining', 'engineer_features', 'integration-1776122689', '--job-id', '54', '--raw', '--subdir', 'DAGS_FOLDER/retraining_dag.py', '--cfg-path', '/tmp/tmp00abvcg0']
+[2026-04-13T23:24:57.254+0000] {standard_task_runner.py:91} INFO - Job 54: Subtask engineer_features
+[2026-04-13T23:24:57.268+0000] {task_command.py:426} INFO - Running <TaskInstance: fraud_detection_retraining.engineer_features integration-1776122689 [running]> on host b3ea6d3c26c0
+[2026-04-13T23:24:57.291+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='madhumitha' AIRFLOW_CTX_DAG_ID='fraud_detection_retraining' AIRFLOW_CTX_TASK_ID='engineer_features' AIRFLOW_CTX_EXECUTION_DATE='2026-04-13T23:24:49.740461+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='integration-1776122689'
+[2026-04-13T23:24:57.292+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-04-13T23:24:59.153+0000] {logging_mixin.py:188} INFO - Saved features to data/processed/transactions_features.parquet with shape=(284807, 45)
+[2026-04-13T23:25:01.116+0000] {logging_mixin.py:188} INFO - Feast repo loaded successfully
+[2026-04-13T23:25:13.428+0000] {logging_mixin.py:188} INFO - No project found in the repository. Using project name fraud_detection defined in feature_store.yaml
+Applying changes for project fraud_detection
+Deploying infrastructure for transaction_features
+Materializing 1 feature views from 2020-01-01 00:00:00+00:00 to 2030-01-01 00:00:00+00:00 into the redis online store.
+
+transaction_features:
+[2026-04-13T23:25:13.429+0000] {logging_mixin.py:188} INFO - /opt/project/src/feature_engineering/feature_store/entities.py:3: DeprecationWarning: Entity value_type will be mandatory in the next release. Please specify a value_type for entity 'transaction_id'.
+  transaction = Entity(
+[2026-04-13T23:25:13.429+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-04-13T23:25:13.430+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-04-13T23:25:13.436+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=fraud_detection_retraining, task_id=engineer_features, run_id=integration-1776122689, execution_date=20260413T232449, start_date=20260413T232457, end_date=20260413T232513
+[2026-04-13T23:25:13.444+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 0
+[2026-04-13T23:25:13.455+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-04-13T23:25:13.457+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

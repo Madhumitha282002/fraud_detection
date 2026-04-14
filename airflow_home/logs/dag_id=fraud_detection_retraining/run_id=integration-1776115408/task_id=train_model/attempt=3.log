@@ -1,0 +1,58 @@
+[2026-04-13T21:42:14.280+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-04-13T21:42:14.288+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: fraud_detection_retraining.train_model integration-1776115408 [queued]>
+[2026-04-13T21:42:14.291+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: fraud_detection_retraining.train_model integration-1776115408 [queued]>
+[2026-04-13T21:42:14.291+0000] {taskinstance.py:2306} INFO - Starting attempt 3 of 3
+[2026-04-13T21:42:14.297+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): train_model> on 2026-04-13 21:23:29.070245+00:00
+[2026-04-13T21:42:14.299+0000] {standard_task_runner.py:64} INFO - Started process 360 to run task
+[2026-04-13T21:42:14.300+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'fraud_detection_retraining', 'train_model', 'integration-1776115408', '--job-id', '44', '--raw', '--subdir', 'DAGS_FOLDER/retraining_dag.py', '--cfg-path', '/tmp/tmpkt01z98h']
+[2026-04-13T21:42:14.301+0000] {standard_task_runner.py:91} INFO - Job 44: Subtask train_model
+[2026-04-13T21:42:14.325+0000] {task_command.py:426} INFO - Running <TaskInstance: fraud_detection_retraining.train_model integration-1776115408 [running]> on host cb9297326049
+[2026-04-13T21:42:14.351+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='madhumitha' AIRFLOW_CTX_DAG_ID='fraud_detection_retraining' AIRFLOW_CTX_TASK_ID='train_model' AIRFLOW_CTX_EXECUTION_DATE='2026-04-13T21:23:29.070245+00:00' AIRFLOW_CTX_TRY_NUMBER='3' AIRFLOW_CTX_DAG_RUN_ID='integration-1776115408'
+[2026-04-13T21:42:14.351+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-04-13T21:44:10.480+0000] {local_task_job_runner.py:124} ERROR - Received SIGTERM. Terminating subprocesses
+[2026-04-13T21:44:10.490+0000] {process_utils.py:132} INFO - Sending 15 to group 360. PIDs of all processes in the group: [361, 360]
+[2026-04-13T21:44:10.493+0000] {process_utils.py:87} INFO - Sending the signal 15 to group 360
+[2026-04-13T21:44:10.498+0000] {taskinstance.py:2611} ERROR - Received SIGTERM. Terminating subprocesses.
+[2026-04-13T21:44:10.533+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-04-13T21:44:10.565+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/retraining_dag.py", line 60, in train_model
+    run_cmd([PYTHON_BIN, "-m", TRAIN_SCRIPT])
+  File "/opt/airflow/dags/retraining_dag.py", line 24, in run_cmd
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 2115, in _communicate
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 2613, in signal_handler
+    raise AirflowTaskTerminated("Task received SIGTERM signal")
+airflow.exceptions.AirflowTaskTerminated: Task received SIGTERM signal
+[2026-04-13T21:44:10.575+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=fraud_detection_retraining, task_id=train_model, run_id=integration-1776115408, execution_date=20260413T212329, start_date=20260413T214214, end_date=20260413T214410
+[2026-04-13T21:44:10.634+0000] {process_utils.py:80} INFO - Process psutil.Process(pid=360, status='terminated', exitcode=2, started='21:42:14') (360) terminated with exit code 2
+[2026-04-13T21:44:10.635+0000] {process_utils.py:80} INFO - Process psutil.Process(pid=361, status='terminated', started='21:42:14') (361) terminated with exit code None
+[2026-04-13T21:44:10.636+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 143
+[2026-04-13T21:44:10.672+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check

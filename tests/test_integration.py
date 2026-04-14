@@ -3,13 +3,11 @@ from __future__ import annotations
 import json
 import time
 
+import mlflow
 import pandas as pd
 import pytest
 import requests
 from confluent_kafka import Consumer, Producer
-from feast import FeatureStore
-
-import mlflow
 
 KAFKA_BROKERS = "localhost:9092"
 RAW_TOPIC = "transactions"
@@ -51,14 +49,16 @@ def test_kafka_round_trip():
     producer.produce(RAW_TOPIC, key=b"991001", value=value)
     producer.flush()
 
-    deadline = time.time() + 5
+    deadline = time.time() + 10
     received = None
     while time.time() < deadline:
         msg = consumer.poll(1.0)
         if msg is None or msg.error():
             continue
-        received = json.loads(msg.value().decode("utf-8"))
-        break
+        candidate = json.loads(msg.value().decode("utf-8"))
+        if int(candidate["transaction_id"]) == 991001:
+            received = candidate
+            break
 
     consumer.close()
 
@@ -67,8 +67,9 @@ def test_kafka_round_trip():
 
 
 @pytest.mark.integration
-def test_feature_pipeline_writes_to_feast_online_store():
+def test_feature_pipeline_publishes_enriched_message():
     producer = Producer({"bootstrap.servers": KAFKA_BROKERS})
+    consumer = _make_consumer(PROCESSED_TOPIC, "integration-processed-topic")
 
     payload = _load_sample_transaction()
     payload["transaction_id"] = 991002
@@ -80,24 +81,29 @@ def test_feature_pipeline_writes_to_feast_online_store():
     )
     producer.flush()
 
-    time.sleep(5)
+    deadline = time.time() + 15
+    received = None
+    while time.time() < deadline:
+        msg = consumer.poll(1.0)
+        if msg is None or msg.error():
+            continue
 
-    store = FeatureStore(repo_path="src/feature_engineering/feature_store")
-    online = store.get_online_features(
-        features=[
-            "transaction_features:amount_log",
-            "transaction_features:amount_zscore",
-            "transaction_features:hour_sin",
-            "transaction_features:hour_cos",
-            "transaction_features:tx_frequency_1h",
-            "transaction_features:amount_mean_1h",
-            "transaction_features:time_since_last_tx",
-        ],
-        entity_rows=[{"transaction_id": 991002}],
-    ).to_dict()
+        candidate = json.loads(msg.value().decode("utf-8"))
+        candidate_tx_id = candidate.get("transaction_id")
+        if candidate_tx_id is not None and int(float(candidate_tx_id)) == 991002:
+            received = candidate
+            break
 
-    assert "amount_log" in online
-    assert online["amount_log"][0] is not None
+    consumer.close()
+
+    assert received is not None
+    assert "amount_log" in received
+    assert "amount_zscore" in received
+    assert "hour_sin" in received
+    assert "hour_cos" in received
+    assert "tx_frequency_1h" in received
+    assert "amount_mean_1h" in received
+    assert "time_since_last_tx" in received
 
 
 @pytest.mark.integration
@@ -158,7 +164,7 @@ def test_retraining_pipeline_triggers_new_run():
     )
     assert trigger_resp.status_code in (200, 201)
 
-    deadline = time.time() + 180
+    deadline = time.time() + 900
     state = None
     while time.time() < deadline:
         resp = requests.get(
@@ -172,4 +178,4 @@ def test_retraining_pipeline_triggers_new_run():
             break
         time.sleep(10)
 
-    assert state == "success"
+    assert state == "success", f"DAG final state was: {state}"

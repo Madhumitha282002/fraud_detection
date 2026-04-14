@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import mlflow.xgboost
 import numpy as np
+import structlog
 import xgboost as xgb
 from mlflow.models import infer_signature
 from sklearn.metrics import (
@@ -15,6 +16,8 @@ from sklearn.metrics import (
 )
 
 import mlflow
+from src.configs import load_yaml, settings
+from src.core.logging_config import configure_logging
 from src.training.utils import (
     FEATURE_NAMES,
     compute_metrics,
@@ -25,7 +28,11 @@ from src.training.utils import (
     stratified_split,
 )
 
-EXPERIMENT_NAME = "fraud-detection"
+configure_logging()
+logger = structlog.get_logger()
+
+model_cfg = load_yaml("configs/model_config.yaml")
+EXPERIMENT_NAME = model_cfg.get("experiment_name", "fraud-detection")
 RANDOM_STATE = 42
 ARTIFACT_DIR_NAME = "artifacts"
 
@@ -94,7 +101,7 @@ def save_feature_importance(
 
 
 def main() -> None:
-    mlflow.set_tracking_uri("http://localhost:5001")
+    mlflow.set_tracking_uri(settings.mlflow_tracking_uri)
     mlflow.set_experiment(EXPERIMENT_NAME)
 
     df = load_training_dataframe()
@@ -110,18 +117,8 @@ def main() -> None:
 
     scale_pos_weight = compute_scale_pos_weight(y_train)
 
-    params = {
-        "objective": "binary:logistic",
-        "eval_metric": "aucpr",
-        "random_state": RANDOM_STATE,
-        "n_estimators": 300,
-        "max_depth": 6,
-        "learning_rate": 0.1,
-        "subsample": 1.0,
-        "colsample_bytree": 1.0,
-        "scale_pos_weight": scale_pos_weight,
-        "n_jobs": -1,
-    }
+    params = model_cfg["xgboost"].copy()
+    params["scale_pos_weight"] = scale_pos_weight
 
     root = get_project_root()
     artifact_dir = root / ARTIFACT_DIR_NAME
@@ -140,7 +137,6 @@ def main() -> None:
 
         val_prob = model.predict_proba(X_val)[:, 1]
         val_metrics = compute_metrics(y_val, val_prob, threshold=0.5)
-
         for name, value in val_metrics.items():
             mlflow.log_metric(f"val_{name}", value)
 
@@ -180,6 +176,13 @@ def main() -> None:
             artifact_path="model",
             signature=signature,
             input_example=X_train.head(5),
+        )
+
+        logger.info(
+            "training_complete",
+            model_version="baseline_candidate",
+            auc_pr=test_metrics["auc_pr"],
+            promoted=False,
         )
 
         print("Validation metrics:")

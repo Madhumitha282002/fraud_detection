@@ -1,0 +1,109 @@
+[2026-04-14T00:10:18.495+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-04-14T00:10:18.503+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: fraud_detection_retraining.promote_or_reject scheduled__2026-04-13T00:00:00+00:00 [queued]>
+[2026-04-14T00:10:18.505+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: fraud_detection_retraining.promote_or_reject scheduled__2026-04-13T00:00:00+00:00 [queued]>
+[2026-04-14T00:10:18.505+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-04-14T00:10:18.512+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): promote_or_reject> on 2026-04-13 00:00:00+00:00
+[2026-04-14T00:10:18.514+0000] {standard_task_runner.py:64} INFO - Started process 1295 to run task
+[2026-04-14T00:10:18.515+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'fraud_detection_retraining', 'promote_or_reject', 'scheduled__2026-04-13T00:00:00+00:00', '--job-id', '76', '--raw', '--subdir', 'DAGS_FOLDER/retraining_dag.py', '--cfg-path', '/tmp/tmpk22wyb5w']
+[2026-04-14T00:10:18.516+0000] {standard_task_runner.py:91} INFO - Job 76: Subtask promote_or_reject
+[2026-04-14T00:10:18.531+0000] {task_command.py:426} INFO - Running <TaskInstance: fraud_detection_retraining.promote_or_reject scheduled__2026-04-13T00:00:00+00:00 [running]> on host 348a71135ada
+[2026-04-14T00:10:18.555+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='madhumitha' AIRFLOW_CTX_DAG_ID='fraud_detection_retraining' AIRFLOW_CTX_TASK_ID='promote_or_reject' AIRFLOW_CTX_EXECUTION_DATE='2026-04-13T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-04-13T00:00:00+00:00'
+[2026-04-14T00:10:18.555+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-04-14T00:10:25.114+0000] {logging_mixin.py:188} INFO - {"model_version": "3", "auc_pr": 0.011706482937829507, "promoted": false, "event": "training_complete", "timestamp": "2026-04-14T00:10:24.802918Z", "level": "info"}
+Staging metrics:
+{
+  "precision": 0.033823529411764704,
+  "recall": 0.3108108108108108,
+  "f1": 0.0610079575596817,
+  "auc_roc": 0.6477028167728787,
+  "auc_pr": 0.011706482937829507,
+  "threshold": 0.5,
+  "tn": 41991,
+  "fp": 657,
+  "fn": 51,
+  "tp": 23
+}
+
+Production metrics:
+{
+  "precision": 0.033823529411764704,
+  "recall": 0.3108108108108108,
+  "f1": 0.0610079575596817,
+  "auc_roc": 0.6477028167728787,
+  "auc_pr": 0.011706482937829507,
+  "threshold": 0.5,
+  "tn": 41991,
+  "fp": 657,
+  "fn": 51,
+  "tp": 23
+}
+
+Decision:
+Kept current Production
+🏃 View run promotion_decision at: http://mlflow:5000/#/experiments/0/runs/f4ad8c649c4b43108679fb1391ce1872
+🧪 View experiment at: http://mlflow:5000/#/experiments/0
+[2026-04-14T00:10:25.115+0000] {logging_mixin.py:188} INFO - Registry cache expired, so refreshing
+Registry cache expired, so refreshing
+/opt/project/src/training/promote_model.py:39: FutureWarning: ``mlflow.tracking.client.MlflowClient.get_latest_versions`` is deprecated since 2.9.0. Model registry stages will be removed in a future major release. To learn more about the deprecation of model registry stages, see our migration guide here: https://mlflow.org/docs/latest/model-registry.html#migrating-from-stages
+  latest = client.get_latest_versions(MODEL_NAME, stages=[stage])
+
+Downloading artifacts:   0%|          | 0/7 [00:00<?, ?it/s]
+Downloading artifacts:  14%|█▍        | 1/7 [00:00<00:00, 67.32it/s]
+Downloading artifacts:  29%|██▊       | 2/7 [00:00<00:00, 117.36it/s]
+Downloading artifacts:  43%|████▎     | 3/7 [00:00<00:00, 156.91it/s]
+Downloading artifacts:  57%|█████▋    | 4/7 [00:00<00:00, 194.72it/s]
+Downloading artifacts:  71%|███████▏  | 5/7 [00:00<00:00, 239.96it/s]
+Downloading artifacts:  86%|████████▌ | 6/7 [00:00<00:00, 117.62it/s]
+Downloading artifacts: 100%|██████████| 7/7 [00:00<00:00, 112.56it/s]
+Downloading artifacts: 100%|██████████| 7/7 [00:00<00:00, 112.37it/s]
+2026/04/14 00:10:23 WARNING mlflow.utils.requirements_utils: Detected one or more mismatches between the model's dependencies and the current Python environment:
+ - mlflow (current: 3.11.1, required: mlflow==3.10.1)
+ - numpy (current: 2.4.4, required: numpy==2.3.1)
+ - psutil (current: 6.0.0, required: psutil==7.1.0)
+ - pyarrow (current: 23.0.1, required: pyarrow==22.0.0)
+ - scipy (current: 1.17.1, required: scipy==1.16.2)
+To fix the mismatches, call `mlflow.pyfunc.get_model_dependencies(model_uri)` to fetch the model's environment and install dependencies using the resulting environment file.
+2026/04/14 00:10:23 WARNING mlflow.pyfunc: The version of Python that the model was saved in, `Python 3.13.5`, differs from the version of Python that is currently running, `Python 3.12.4`, and may be incompatible
+/opt/project/src/training/promote_model.py:39: FutureWarning: ``mlflow.tracking.client.MlflowClient.get_latest_versions`` is deprecated since 2.9.0. Model registry stages will be removed in a future major release. To learn more about the deprecation of model registry stages, see our migration guide here: https://mlflow.org/docs/latest/model-registry.html#migrating-from-stages
+  latest = client.get_latest_versions(MODEL_NAME, stages=[stage])
+2026/04/14 00:10:23 WARNING mlflow.utils.git_utils: Failed to import Git (the Git executable is probably not on your PATH), so Git SHA is not available. Error: Failed to initialize: Bad git executable.
+The git executable must be specified in one of the following ways:
+    - be included in your $PATH
+    - be set via $GIT_PYTHON_GIT_EXECUTABLE
+    - explicitly set via git.refresh(<full-path-to-git-executable>)
+
+All git commands will error until this is rectified.
+
+This initial message can be silenced or aggravated in the future by setting the
+$GIT_PYTHON_REFRESH environment variable. Use one of the following values:
+    - quiet|q|silence|s|silent|none|n|0: for no message or exception
+    - warn|w|warning|log|l|1: for a warning message (logging level CRITICAL, displayed by default)
+    - error|e|exception|raise|r|2: for a raised exception
+
+Example:
+    export GIT_PYTHON_REFRESH=quiet
+
+
+Downloading artifacts:   0%|          | 0/7 [00:00<?, ?it/s]
+Downloading artifacts:  14%|█▍        | 1/7 [00:00<00:00, 50.64it/s]
+Downloading artifacts:  29%|██▊       | 2/7 [00:00<00:00, 86.93it/s]
+Downloading artifacts:  43%|████▎     | 3/7 [00:00<00:00, 129.86it/s]
+Downloading artifacts:  57%|█████▋    | 4/7 [00:00<00:00, 162.60it/s]
+Downloading artifacts:  71%|███████▏  | 5/7 [00:00<00:00, 196.81it/s]
+Downloading artifacts:  86%|████████▌ | 6/7 [00:00<00:00, 209.90it/s]
+Downloading artifacts: 100%|██████████| 7/7 [00:00<00:00, 119.29it/s]
+Downloading artifacts: 100%|██████████| 7/7 [00:00<00:00, 119.02it/s]
+2026/04/14 00:10:24 WARNING mlflow.utils.requirements_utils: Detected one or more mismatches between the model's dependencies and the current Python environment:
+ - mlflow (current: 3.11.1, required: mlflow==3.10.1)
+ - numpy (current: 2.4.4, required: numpy==2.3.1)
+ - psutil (current: 6.0.0, required: psutil==7.1.0)
+ - pyarrow (current: 23.0.1, required: pyarrow==22.0.0)
+ - scipy (current: 1.17.1, required: scipy==1.16.2)
+To fix the mismatches, call `mlflow.pyfunc.get_model_dependencies(model_uri)` to fetch the model's environment and install dependencies using the resulting environment file.
+2026/04/14 00:10:24 WARNING mlflow.pyfunc: The version of Python that the model was saved in, `Python 3.13.5`, differs from the version of Python that is currently running, `Python 3.12.4`, and may be incompatible
+[2026-04-14T00:10:25.115+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-04-14T00:10:25.115+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-04-14T00:10:25.118+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=fraud_detection_retraining, task_id=promote_or_reject, run_id=scheduled__2026-04-13T00:00:00+00:00, execution_date=20260413T000000, start_date=20260414T001018, end_date=20260414T001025
+[2026-04-14T00:10:25.139+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 0
+[2026-04-14T00:10:25.146+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-04-14T00:10:25.147+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

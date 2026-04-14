@@ -1,34 +1,25 @@
 from __future__ import annotations
 
 import json
-import logging
 import time
 
 import pandas as pd
 import structlog
 from confluent_kafka import Consumer, Producer
 
+from src.configs import settings
+from src.core.logging_config import configure_logging
 from src.data_ingestion.message_validation import validate_transaction_message
 from src.feature_engineering.features import build_features
 
-RAW_TOPIC = "transactions"
-PROCESSED_TOPIC = "processed-transactions"
-DLQ_TOPIC = "transactions-dlq"
-BROKERS = "localhost:9092"
-GROUP_ID = "fraud-feature-consumer"
-
-
-logging.basicConfig(format="%(message)s", level=logging.INFO)
-structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.add_log_level,
-        structlog.processors.JSONRenderer(),
-    ],
-    logger_factory=structlog.PrintLoggerFactory(),
-)
-
+configure_logging()
 logger = structlog.get_logger()
+
+RAW_TOPIC = settings.kafka_raw_topic
+PROCESSED_TOPIC = settings.kafka_processed_topic
+DLQ_TOPIC = settings.kafka_dlq_topic
+BROKERS = settings.kafka_brokers
+GROUP_ID = settings.kafka_group_id
 
 
 def make_consumer() -> Consumer:
@@ -47,7 +38,9 @@ def make_producer() -> Producer:
 
 
 def send_to_dlq(
-    producer: Producer, original_value: bytes | None, error_message: str
+    producer: Producer,
+    original_value: bytes | None,
+    error_message: str,
 ) -> None:
     payload = {
         "error": error_message,
@@ -82,6 +75,7 @@ def main() -> None:
                 continue
 
             start = time.time()
+
             try:
                 payload = json.loads(msg.value().decode("utf-8"))
 
@@ -91,6 +85,7 @@ def main() -> None:
                     logger.warning(
                         "message_sent_to_dlq",
                         topic=RAW_TOPIC,
+                        partition=msg.partition(),
                         offset=msg.offset(),
                         reason=error,
                     )
@@ -99,7 +94,11 @@ def main() -> None:
 
                 enriched = process_payload(payload)
 
-                print(json.dumps(enriched, default=str))
+                logger.info(
+                    "features_computed",
+                    transaction_id=payload["transaction_id"],
+                    enriched=enriched,
+                )
 
                 producer.produce(
                     PROCESSED_TOPIC,
@@ -125,6 +124,7 @@ def main() -> None:
                 logger.exception(
                     "message_processing_failed",
                     topic=msg.topic(),
+                    partition=msg.partition(),
                     offset=msg.offset(),
                     error=str(e),
                 )

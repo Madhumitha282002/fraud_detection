@@ -1,0 +1,16 @@
+great-expectations
+mlflow
+feast
+pandas
+pyarrow
+scikit-learn
+xgboost
+lightgbm
+structlog
+pydantic-settings
+pyyaml
+fastapi
+uvicorn
+requests
+redis
+confluent-kafka

@@ -1,0 +1,47 @@
+[2026-04-13T19:16:52.244+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-04-13T19:16:52.251+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: fraud_detection_retraining.validate_new_data integration-1776107250 [queued]>
+[2026-04-13T19:16:52.253+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: fraud_detection_retraining.validate_new_data integration-1776107250 [queued]>
+[2026-04-13T19:16:52.254+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-04-13T19:16:52.259+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): validate_new_data> on 2026-04-13 19:07:30.947920+00:00
+[2026-04-13T19:16:52.261+0000] {standard_task_runner.py:64} INFO - Started process 199 to run task
+[2026-04-13T19:16:52.262+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'fraud_detection_retraining', 'validate_new_data', 'integration-1776107250', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/retraining_dag.py', '--cfg-path', '/tmp/tmpp11deaho']
+[2026-04-13T19:16:52.262+0000] {standard_task_runner.py:91} INFO - Job 7: Subtask validate_new_data
+[2026-04-13T19:16:52.278+0000] {task_command.py:426} INFO - Running <TaskInstance: fraud_detection_retraining.validate_new_data integration-1776107250 [running]> on host 72fb3c54dfeb
+[2026-04-13T19:16:52.298+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='madhumitha' AIRFLOW_CTX_DAG_ID='fraud_detection_retraining' AIRFLOW_CTX_TASK_ID='validate_new_data' AIRFLOW_CTX_EXECUTION_DATE='2026-04-13T19:07:30.947920+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='integration-1776107250'
+[2026-04-13T19:16:52.298+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-04-13T19:16:52.369+0000] {logging_mixin.py:188} INFO - Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/project/src/data_ingestion/validate.py", line 8, in <module>
+    from src.data_ingestion.gx_setup import validate_csv
+  File "/opt/project/src/data_ingestion/gx_setup.py", line 5, in <module>
+    import great_expectations as gx
+ModuleNotFoundError: No module named 'great_expectations'
+[2026-04-13T19:16:52.370+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-04-13T19:16:52.370+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/retraining_dag.py", line 34, in validate_new_data
+    run_cmd([PYTHON_BIN, "-m", "src.data_ingestion.validate", RAW_DATA_PATH])
+  File "/opt/airflow/dags/retraining_dag.py", line 30, in run_cmd
+    raise RuntimeError(f"Command failed: {' '.join(cmd)}")
+RuntimeError: Command failed: python3 -m src.data_ingestion.validate /opt/project/data/raw/creditcard.csv
+[2026-04-13T19:16:52.372+0000] {taskinstance.py:1206} INFO - Marking task as UP_FOR_RETRY. dag_id=fraud_detection_retraining, task_id=validate_new_data, run_id=integration-1776107250, execution_date=20260413T190730, start_date=20260413T191652, end_date=20260413T191652
+[2026-04-13T19:16:52.377+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 7 for task validate_new_data (Command failed: python3 -m src.data_ingestion.validate /opt/project/data/raw/creditcard.csv; 199)
+[2026-04-13T19:16:52.410+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-04-13T19:16:52.418+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-04-13T19:16:52.418+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -3,9 +3,12 @@ from __future__ import annotations
 import json
 
 import numpy as np
+import structlog
 
 import mlflow
 from mlflow import MlflowClient
+from src.configs import load_yaml, settings
+from src.core.logging_config import configure_logging
 from src.training.utils import (
     compute_metrics,
     get_X_y,
@@ -13,8 +16,13 @@ from src.training.utils import (
     stratified_split,
 )
 
-TRACKING_URI = "http://localhost:5001"
-MODEL_NAME = "fraud-detection-model"
+configure_logging()
+logger = structlog.get_logger()
+
+monitoring_cfg = load_yaml("configs/monitoring_config.yaml")
+
+TRACKING_URI = settings.mlflow_tracking_uri
+MODEL_NAME = settings.mlflow_model_name
 
 
 def load_model_from_stage(stage: str):
@@ -60,6 +68,7 @@ def main() -> None:
             mlflow.log_metric(f"staging_{k}", v)
 
         promote = False
+        margin = monitoring_cfg.get("promotion_margin", settings.promotion_margin)
 
         if production_version is None:
             promote = True
@@ -72,7 +81,9 @@ def main() -> None:
             for k, v in production_metrics.items():
                 mlflow.log_metric(f"production_{k}", v)
 
-            promote = staging_metrics["auc_pr"] > production_metrics["auc_pr"]
+            promote = staging_metrics["auc_pr"] > (
+                production_metrics["auc_pr"] + margin
+            )
 
         if promote:
             client.transition_model_version_stage(
@@ -82,6 +93,7 @@ def main() -> None:
                 archive_existing_versions=True,
             )
             mlflow.log_param("promotion_decision", "promoted")
+
             if production_version is not None:
                 client.transition_model_version_stage(
                     name=MODEL_NAME,
@@ -91,6 +103,13 @@ def main() -> None:
                 )
         else:
             mlflow.log_param("promotion_decision", "kept_existing_production")
+
+        logger.info(
+            "training_complete",
+            model_version=staging_version.version,
+            auc_pr=staging_metrics["auc_pr"],
+            promoted=promote,
+        )
 
         print("Staging metrics:")
         print(json.dumps(staging_metrics, indent=2))

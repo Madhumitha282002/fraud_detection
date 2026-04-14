@@ -1,0 +1,4 @@
+drift_threshold: 0.3
+performance_threshold: 0.7
+promotion_margin: 0.005
+alert_webhook: ""

@@ -1,0 +1,64 @@
+[2026-04-13T23:25:15.274+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-04-13T23:25:15.285+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: fraud_detection_retraining.train_model integration-1776122689 [queued]>
+[2026-04-13T23:25:15.287+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: fraud_detection_retraining.train_model integration-1776122689 [queued]>
+[2026-04-13T23:25:15.287+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 3
+[2026-04-13T23:25:15.293+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): train_model> on 2026-04-13 23:24:49.740461+00:00
+[2026-04-13T23:25:15.294+0000] {standard_task_runner.py:64} INFO - Started process 259 to run task
+[2026-04-13T23:25:15.296+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'fraud_detection_retraining', 'train_model', 'integration-1776122689', '--job-id', '55', '--raw', '--subdir', 'DAGS_FOLDER/retraining_dag.py', '--cfg-path', '/tmp/tmpzz89u488']
+[2026-04-13T23:25:15.297+0000] {standard_task_runner.py:91} INFO - Job 55: Subtask train_model
+[2026-04-13T23:25:15.312+0000] {task_command.py:426} INFO - Running <TaskInstance: fraud_detection_retraining.train_model integration-1776122689 [running]> on host b3ea6d3c26c0
+[2026-04-13T23:25:15.335+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='madhumitha' AIRFLOW_CTX_DAG_ID='fraud_detection_retraining' AIRFLOW_CTX_TASK_ID='train_model' AIRFLOW_CTX_EXECUTION_DATE='2026-04-13T23:24:49.740461+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='integration-1776122689'
+[2026-04-13T23:25:15.335+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-04-13T23:25:18.525+0000] {logging_mixin.py:188} INFO - Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/project/src/training/train.py", line 195, in <module>
+    main()
+  File "/opt/project/src/training/train.py", line 105, in main
+    mlflow.set_experiment(EXPERIMENT_NAME)
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/tracking/fluent.py", line 207, in set_experiment
+    experiment = client.get_experiment_by_name(experiment_name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/tracking/_tracking_service/client.py", line 283, in get_experiment_by_name
+    return self.store.get_experiment_by_name(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/store/tracking/rest_store.py", line 1120, in get_experiment_by_name
+    response_proto = self._call_endpoint(GetExperimentByName, req_body)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/store/tracking/rest_store.py", line 243, in _call_endpoint
+    return call_endpoint(
+           ^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/utils/rest_utils.py", line 650, in call_endpoint
+    response = verify_rest_response(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/mlflow/utils/rest_utils.py", line 368, in verify_rest_response
+    raise MlflowException(
+mlflow.exceptions.MlflowException: API request to endpoint /api/2.0/mlflow/experiments/get-by-name failed with error code 403 != 200. Response body: 'Invalid Host header - possible DNS rebinding attack detected'
+[2026-04-13T23:25:18.526+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-04-13T23:25:18.526+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 235, in execute
+    return_value = self.execute_callable()
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/python.py", line 252, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/retraining_dag.py", line 60, in train_model
+    run_cmd([PYTHON_BIN, "-m", TRAIN_SCRIPT])
+  File "/opt/airflow/dags/retraining_dag.py", line 30, in run_cmd
+    raise RuntimeError(f"Command failed: {' '.join(cmd)}")
+RuntimeError: Command failed: python3 -m src.training.train
+[2026-04-13T23:25:18.530+0000] {taskinstance.py:1206} INFO - Marking task as UP_FOR_RETRY. dag_id=fraud_detection_retraining, task_id=train_model, run_id=integration-1776122689, execution_date=20260413T232449, start_date=20260413T232515, end_date=20260413T232518
+[2026-04-13T23:25:18.536+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 55 for task train_model (Command failed: python3 -m src.training.train; 259)
+[2026-04-13T23:25:18.560+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2026-04-13T23:25:18.570+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-04-13T23:25:18.571+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

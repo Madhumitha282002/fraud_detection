@@ -43,7 +43,7 @@ services:
       --host 0.0.0.0
       --port 5000
       --backend-store-uri sqlite:///mlflow.db
-      --allowed-hosts localhost:*,127.0.0.1:*"
+      --allowed-hosts localhost:*,127.0.0.1:*,mlflow:*,mlflow"
     ports:
       - "5001:5000"
 
@@ -76,7 +76,7 @@ services:
     ports:
       - "8080:8080"
     working_dir: /opt/project
-    command: bash -c "airflow webserver --port 8080 & airflow scheduler"
+    command: bash -c "pip install -r requirements-airflow.txt && airflow scheduler & exec airflow webserver --port 8080"
   
   # fraud-serving:
   #   image: ghcr.io/madhumitha282002/fraud_detection/fraud-serving:latest

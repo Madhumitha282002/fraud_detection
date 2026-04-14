@@ -1,0 +1,17 @@
+features:
+  - amount_log
+  - amount_zscore
+  - hour_of_day
+  - hour_sin
+  - hour_cos
+  - tx_frequency_1h
+  - tx_frequency_6h
+  - tx_frequency_24h
+  - amount_mean_1h
+  - amount_mean_24h
+  - time_since_last_tx
+
+windows:
+  short_seconds: 3600
+  medium_seconds: 21600
+  long_seconds: 86400
