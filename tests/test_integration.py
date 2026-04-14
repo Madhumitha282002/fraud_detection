@@ -7,7 +7,6 @@ import pandas as pd
 import pytest
 import requests
 from confluent_kafka import Consumer, Producer
-from feast import FeatureStore
 
 import mlflow
 
