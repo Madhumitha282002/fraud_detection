@@ -7,7 +7,9 @@ class TransactionInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     transaction_id: str = Field(..., min_length=1, description="Unique transaction ID")
-    Time: float = Field(..., ge=0, description="Seconds elapsed since first transaction")
+    Time: float = Field(
+        ..., ge=0, description="Seconds elapsed since first transaction"
+    )
     Amount: float = Field(..., ge=0, description="Transaction amount")
 
     V1: float

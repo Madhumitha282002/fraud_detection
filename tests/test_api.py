@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from src.serving.app import app
 
-client = TestClient(app)
+
+@pytest.fixture
+def client() -> TestClient:
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 def valid_payload() -> dict:
@@ -18,7 +23,7 @@ def valid_payload() -> dict:
     return payload
 
 
-def test_health_returns_200() -> None:
+def test_health_returns_200(client: TestClient) -> None:
     response = client.get("/health")
     assert response.status_code == 200
 
@@ -27,7 +32,7 @@ def test_health_returns_200() -> None:
     assert "uptime_seconds" in body
 
 
-def test_predict_valid_payload_returns_prediction() -> None:
+def test_predict_valid_payload_returns_prediction(client: TestClient) -> None:
     response = client.post("/predict", json=valid_payload())
     assert response.status_code == 200
 
@@ -39,13 +44,13 @@ def test_predict_valid_payload_returns_prediction() -> None:
     assert body["latency_ms"] >= 0
 
 
-def test_predict_invalid_payload_returns_422() -> None:
+def test_predict_invalid_payload_returns_422(client: TestClient) -> None:
     bad_payload = {"transaction_id": "tx_001", "Amount": -5.0, "Time": 100.0}
     response = client.post("/predict", json=bad_payload)
     assert response.status_code == 422
 
 
-def test_predict_returns_503_when_model_missing() -> None:
+def test_predict_returns_503_when_model_missing(client: TestClient) -> None:
     original_model = getattr(app.state, "model", None)
     original_version = getattr(app.state, "model_version", None)
     original_stage = getattr(app.state, "model_stage", None)
