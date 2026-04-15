@@ -1,3 +1,5 @@
 .env
 .env.*
 !.env.example
+airflow_home/*.db
+airflow_home/logs/
