@@ -5,9 +5,11 @@ import json
 import sqlite3
 import time
 from pathlib import Path
+from typing import Any
 
 import structlog
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
 
 from src.configs import load_yaml, settings
 from src.core.logging_config import configure_logging
@@ -22,6 +24,28 @@ app = FastAPI(title="Fraud Detection Serving API")
 APP_START_TIME = time.time()
 PREDICTIONS_DB_PATH = Path("data/predictions/predictions.db")
 
+PREDICTION_COUNT = Counter(
+    "prediction_count",
+    "Total number of predictions served",
+    ["label"],
+)
+
+PREDICTION_LATENCY = Histogram(
+    "prediction_latency_seconds",
+    "Latency of prediction requests in seconds",
+)
+
+MODEL_VERSION_INFO = Gauge(
+    "model_version_info",
+    "Current loaded model version",
+    ["model_version", "model_stage"],
+)
+
+DRIFT_SCORE_GAUGE = Gauge(
+    "drift_score",
+    "Latest computed drift score",
+)
+
 
 def ensure_prediction_log_table() -> None:
     PREDICTIONS_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -34,6 +58,7 @@ def ensure_prediction_log_table() -> None:
                 timestamp REAL NOT NULL,
                 transaction_id TEXT NOT NULL,
                 input_hash TEXT NOT NULL,
+                payload_json TEXT NOT NULL DEFAULT '{}',
                 fraud_probability REAL NOT NULL,
                 is_fraud INTEGER NOT NULL,
                 model_version TEXT NOT NULL,
@@ -41,12 +66,24 @@ def ensure_prediction_log_table() -> None:
             )
             """
         )
+
+        columns = {
+            row[1] for row in conn.execute("PRAGMA table_info(predictions)").fetchall()
+        }
+        if "payload_json" not in columns:
+            conn.execute(
+                """
+                ALTER TABLE predictions
+                ADD COLUMN payload_json TEXT NOT NULL DEFAULT '{}'
+                """
+            )
+
         conn.commit()
 
 
 def log_prediction(
     transaction_id: str,
-    payload_dict: dict,
+    payload_dict: dict[str, Any],
     fraud_probability: float,
     is_fraud: bool,
     model_version: str,
@@ -62,17 +99,19 @@ def log_prediction(
                 timestamp,
                 transaction_id,
                 input_hash,
+                payload_json,
                 fraud_probability,
                 is_fraud,
                 model_version,
                 latency_ms
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 time.time(),
                 transaction_id,
                 input_hash,
+                payload_json,
                 fraud_probability,
                 int(is_fraud),
                 model_version,
@@ -84,7 +123,7 @@ def log_prediction(
 
 def load_model_stub() -> str:
     """
-    Temporary stub for Day 15.
+    Temporary stub for Day 15/16.
     Replace this with MLflow Production model loading later.
     """
     return "stub_model"
@@ -98,6 +137,12 @@ def startup_event() -> None:
         app.state.model = load_model_stub()
         app.state.model_version = "stub-v1"
         app.state.model_stage = "Production"
+
+        MODEL_VERSION_INFO.labels(
+            model_version=app.state.model_version,
+            model_stage=app.state.model_stage,
+        ).set(1)
+        DRIFT_SCORE_GAUGE.set(0.0)
 
         logger.info(
             "app_started",
@@ -127,7 +172,7 @@ def health() -> HealthResponse:
 
 
 @app.get("/model-info")
-def model_info() -> dict:
+def model_info() -> dict[str, Any]:
     model = getattr(app.state, "model", None)
     if model is None:
         raise HTTPException(status_code=503, detail="Model not available")
@@ -138,9 +183,15 @@ def model_info() -> dict:
         "model_stage": getattr(app.state, "model_stage", None),
         "environment": settings.environment,
         "prediction_threshold": model_cfg.get(
-            "prediction_threshold", settings.prediction_threshold
+            "prediction_threshold",
+            settings.prediction_threshold,
         ),
     }
+
+
+@app.get("/metrics")
+def metrics() -> Response:
+    return Response(generate_latest(), media_type="text/plain")
 
 
 @app.post("/predict", response_model=PredictionResponse)
@@ -154,7 +205,7 @@ def predict(payload: TransactionInput) -> PredictionResponse:
 
     payload_dict = payload.model_dump()
 
-    # Temporary inference stub for Day 15.
+    # Temporary inference stub for Day 15/16.
     # Replace later with Feast feature fetch + MLflow model.predict().
     fraud_probability = 0.1
     threshold = model_cfg.get("prediction_threshold", settings.prediction_threshold)
@@ -169,6 +220,9 @@ def predict(payload: TransactionInput) -> PredictionResponse:
         model_version=app.state.model_version,
         latency_ms=latency_ms,
     )
+
+    PREDICTION_COUNT.labels(label=str(is_fraud).lower()).inc()
+    PREDICTION_LATENCY.observe(latency_ms / 1000.0)
 
     logger.info(
         "prediction",

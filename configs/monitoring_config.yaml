@@ -1,4 +1,7 @@
-drift_threshold: 0.3
+drift_threshold: 0.1
 performance_threshold: 0.7
-promotion_margin: 0.005
-alert_webhook: ""
+reference_data_path: data/processed/training_reference.parquet
+prediction_log_db_path: data/predictions/predictions.db
+reports_dir: dashboards/reports
+recent_predictions_limit: 1000
+airflow_dag_id: fraud_detection_retraining

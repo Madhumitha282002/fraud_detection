@@ -1,0 +1,41 @@
+artifact_path: mlflow-artifacts:/1/models/m-76cd426db8964886bc37991116171bc8/artifacts
+flavors:
+  python_function:
+    data: model.ubj
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.12.4
+  xgboost:
+    code: null
+    data: model.ubj
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: ubj
+    xgb_version: 3.2.0
+is_signature_from_type_hint: false
+mlflow_version: 3.11.1
+model_id: m-76cd426db8964886bc37991116171bc8
+model_size_bytes: 907990
+model_uuid: m-76cd426db8964886bc37991116171bc8
+prompts: null
+run_id: 265665616ae54005a9ae329199caee25
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "amount_log", "required": true}, {"type": "double",
+    "name": "amount_zscore", "required": true}, {"type": "long", "name": "hour_of_day",
+    "required": true}, {"type": "double", "name": "hour_sin", "required": true}, {"type":
+    "double", "name": "hour_cos", "required": true}, {"type": "long", "name": "tx_frequency_1h",
+    "required": true}, {"type": "long", "name": "tx_frequency_6h", "required": true},
+    {"type": "long", "name": "tx_frequency_24h", "required": true}, {"type": "double",
+    "name": "amount_mean_1h", "required": true}, {"type": "double", "name": "amount_mean_24h",
+    "required": true}, {"type": "double", "name": "time_since_last_tx", "required":
+    true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float32", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-04-20 20:25:54.636192'

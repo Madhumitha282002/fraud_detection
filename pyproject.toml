@@ -21,6 +21,7 @@ dependencies = [
     "uvicorn==0.30.6",
     "confluent-kafka==2.5.3",
     "evidently==0.4.39",
+    "prometheus-client",
     "pydantic-settings==2.4.0",
     "structlog==24.4.0",
     "optuna==3.6.1",
