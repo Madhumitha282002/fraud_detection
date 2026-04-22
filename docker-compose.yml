@@ -85,14 +85,14 @@ services:
   #     - "8000:8000"
   #   restart: unless-stopped
   
-  fraud-serving:
-    build:
-      context: .
-      dockerfile: ./infra/Dockerfile.serving
-    container_name: fraud-serving
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
+  # fraud-serving:
+  #   build:
+  #     context: .
+  #     dockerfile: ./infra/Dockerfile.serving
+  #   container_name: fraud-serving
+  #   ports:
+  #     - "8000:8000"
+  #   restart: unless-stopped
 
   serving:
     build:
@@ -129,6 +129,24 @@ services:
       - ./dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
+    networks:
+      - fraud_net
+  
+  streamlit:
+    image: python:3.11-slim
+    container_name: fraud-streamlit
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      bash -c "pip install -e . &&
+               streamlit run dashboards/streamlit_app.py
+               --server.port 8501
+               --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - serving
     networks:
       - fraud_net
 
