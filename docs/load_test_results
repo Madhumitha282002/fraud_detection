@@ -1,0 +1,34 @@
+# Day 19 Load Test Results
+
+## Test Setup
+- Tool: Locust
+- Target: FastAPI /predict and /health
+- Host: http://127.0.0.1:8000
+
+## Results
+
+### 10 users
+- RPS: 16
+- p50 latency: 8
+- p95 latency: 13
+- p99 latency: 18
+- Error rate: 0
+
+### 50 users
+- RPS: 34.63
+- p50 latency: 4
+- p95 latency: 14
+- p99 latency: 30
+- Error rate: 0
+
+### 100 users
+- RPS: 34.13
+- p50 latency: 7
+- p95 latency: 14
+- p99 latency: 22
+- Error rate: 0
+
+## Observations
+- Stability:
+- Bottlenecks:
+- Next optimizations:
