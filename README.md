@@ -23,6 +23,7 @@ The project was built to demonstrate practical MLOps capabilities, including MLf
 
 ## Architecture
 
+```mermaid
 flowchart LR
     A[Raw Transactions / Dataset] --> B[Kafka Producer]
     B --> C[Kafka Topic]
@@ -40,8 +41,9 @@ flowchart LR
     N[Streamlit Dashboard] --> F
     N --> G
     N --> L
+```
 
-A more detailed explanation of the system design is available in docs/architecture.md
+A more detailed explanation of the system design is available in [docs/architecture.md](docs/architecture.md)
 
 ## Tech Stack
 | Tool | Role |
