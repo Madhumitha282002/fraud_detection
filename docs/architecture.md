@@ -9,7 +9,7 @@ This project implements a real-time fraud detection system with end-to-end MLOps
 At a high level, the system processes transactions through a streaming and serving pipeline, records prediction behavior, monitors the system with metrics and dashboards, and supports retraining through orchestration. The design emphasizes reproducibility, observability, and modularity.
 
 ## Architecture Diagram
-
+```mermaid
 flowchart LR
     A[Raw Transactions / Source Data] --> B[Kafka Producer]
     B --> C[Kafka Transactions Topic]
@@ -27,8 +27,7 @@ flowchart LR
     N[Streamlit Dashboard] --> F
     N --> G
     N --> L
-
-
+```
 
 ## Component Breakdown
 
